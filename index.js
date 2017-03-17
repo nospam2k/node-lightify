@@ -62,7 +62,10 @@ lightify.prototype.processData = function(cmd, data) {
             response : data.toString('hex')
         });
     }
-    var num = data.readUInt16LE(9);
+    // WARNING : lightify gateway return wrong num at position 9 for zone_info
+    // request at some newly created zones. we set it to 1 for now.
+    // by rainlake @ 03/17/2017
+    var num = cmd.cmdId === COMMAND_GET_ZONE_INFO ? 1 : data.readUInt16LE(9);
     var result = { result: [] };
     var packageSize = cmd.packageSize || (num && (data.length - 11) / num);
     for (var i = 0; i < num; i++) {
@@ -146,6 +149,7 @@ lightify.prototype.sendCommand = function(cmdId, body, flag, cb, packageSize) {
         body.copy(buffer, 8);
         var cmd = {
             seq : seq,
+            cmdId : cmdId,
             createTime : moment().format('x'),
             resolve : resolve,
             reject : reject,
@@ -195,7 +199,7 @@ lightify.prototype.discover = function() {
 }
 
 lightify.prototype.discoverZone = function() {
-    return this.sendCommand(COMMAND_LIST_ALL_ZONE, new Buffer([0x0]), 2, function(data, pos) {
+    return this.sendCommand(COMMAND_LIST_ALL_ZONE, new Buffer([0x0]), function(data, pos) {
         var id = data.readUInt16LE(pos);
         var buffer = new Buffer(8);
         buffer.fill(0);
@@ -210,7 +214,7 @@ lightify.prototype.discoverZone = function() {
 lightify.prototype.nodeOnOff = function(mac, on, isGroup) {
     var body = defaultBuffer(mac);
     body.writeUInt8(on ? 1 : 0, 8);
-    return this.sendCommand(COMMAND_ONOFF, body, isGroup ? 0x2 : 0);
+    return this.sendCommand(COMMAND_ONOFF, body, isGroup ? 0x2 : 0x0);
 }
 lightify.prototype.nodeSoftOnOff = function(mac, on, transitiontime) {
     var body = defaultBuffer(mac, 10);
@@ -226,21 +230,19 @@ lightify.prototype.activateScene = function(sceneId) {
 lightify.prototype.getZoneInfo = function(zone) {
     var body = new Buffer(2);
     body.writeUInt16LE(zone, 0);
-    return this.sendCommand (COMMAND_GET_ZONE_INFO, body, 2,
-        function(data, pos) {
-            var o = {
-                groupNo: zone,
-                name: data.getOurUTF8String(pos, pos + 15),
-                devices: []
-            }
-            var cnt = data.readUInt8(pos + 16);
-            for (var i= 0; i < cnt; i++) {
-                var ipos = pos + 17 + i * 8;
-                o.devices.push(data.readDoubleLE(ipos, 8));
-            }
-            return o;
+    return this.sendCommand (COMMAND_GET_ZONE_INFO, body, function(data, pos) {
+        var o = {
+            groupNo: zone,
+            name: data.getOurUTF8String(pos, pos + 15),
+            devices: []
         }
-    );
+        var cnt = data.readUInt8(pos + 16);
+        for (var i= 0; i < cnt; i++) {
+            var ipos = pos + 17 + i * 8;
+            o.devices.push(data.readDoubleLE(ipos, 8));
+        }
+        return o;
+    });
 }
 lightify.prototype.getStatus = function(mac) {
     var self = this;
