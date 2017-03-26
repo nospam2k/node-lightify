@@ -407,20 +407,20 @@ lightify.prototype.getStatus = function(mac) {
         return Promise.resolve(device.result.length && device.result[0]);
     });
 }
-lightify.prototype.nodeBrightness = function(mac, brightness, stepTime) {
+lightify.prototype.nodeBrightness = function(mac, brightness, stepTime, isGroup) {
     var buffer = defaultBuffer(mac, 11);
     buffer.writeUInt8(brightness, 8);
     buffer.writeUInt16LE(stepTime || 0, 9);
-    return this.sendCommand(COMMAND_BRIGHTNESS, buffer);
+    return this.sendCommand(COMMAND_BRIGHTNESS, buffer, isGroup ? 0x2 : 0x0);
 }
-lightify.prototype.nodeTemperature = function(mac, temperature, stepTime) {
+lightify.prototype.nodeTemperature = function(mac, temperature, stepTime, isGroup) {
     var buffer = defaultBuffer(mac, 12);
     buffer.writeUInt16LE(temperature, 8);
     buffer.writeUInt16LE(stepTime || 0, 10);
-    return this.sendCommand(COMMAND_TEMP, buffer);
+    return this.sendCommand(COMMAND_TEMP, buffer, isGroup ? 0x2 : 0x0);
 }
 
-lightify.prototype.nodeColor = function(mac, red, green, blue, alpha, stepTime) {
+lightify.prototype.nodeColor = function(mac, red, green, blue, alpha, stepTime, isGroup) {
     var buffer = defaultBuffer(mac, 14);
     buffer.writeUInt8(red, 8);
     buffer.writeUInt8(green, 9);
@@ -428,7 +428,7 @@ lightify.prototype.nodeColor = function(mac, red, green, blue, alpha, stepTime) 
     buffer.writeUInt8(alpha, 11);
     buffer.writeUInt16LE(stepTime || 0, 12);
 
-    return this.sendCommand(COMMAND_COLOR, buffer);
+    return this.sendCommand(COMMAND_COLOR, buffer, isGroup ? 0x2 : 0x0);
 }
 function getNodeType(type) {
     return isPlug(type) ? 16 : type;
