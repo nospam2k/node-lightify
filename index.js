@@ -65,6 +65,7 @@ var lightify = function(ip, logger) {
         COMMAND_COLOR,
         COMMAND_GET_STATUS
     ];
+    this.sendNextRequest = this.sendNextRequestNormal;
     this.connectErrorCount = 0;
 };
 lightify.prototype.processData = function(cmd, data) {
@@ -179,7 +180,7 @@ lightify.prototype.setDisconnectTimer = function () {
     if (!self.disconnectTimer || !self.buffers.length) _setTimer ();
 };
 
-lightify.sendNextRequest = lightify.prototype.sendNextRequestNormal = function (buffer) {
+lightify.prototype.sendNextRequestNormal = function (buffer) {
     if (buffer) this.client.write(buffer); // to overwrite it to use serialization
 };
 
