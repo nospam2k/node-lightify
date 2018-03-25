@@ -1,6 +1,6 @@
 {
   "name": "node-lightify-mg",
-  "version": "2.1.12",
+  "version": "2.1.13",
   "description": "lightify node module",
   "license": "BSD",
   "keywords": [
@@ -10,10 +10,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/mylesgray/node-lightify.git"
+    "url": "git://github.com/mylesgray/node-lightify-mg.git"
   },
   "bugs": {
-    "url": "https://github.com/mylesgray/node-lightify/issues"
+    "url": "https://github.com/mylesgray/node-lightify-mg/issues"
   },
   "engines": {
     "node": ">=0.12.0"
