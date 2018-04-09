@@ -1,5 +1,5 @@
 {
-  "name": "node-lightify-mg",
+  "name": "node-lightify",
   "version": "2.1.13",
   "description": "lightify node module",
   "license": "BSD",
@@ -10,10 +10,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/mylesgray/node-lightify-mg.git"
+    "url": "git://github.com/rainlake/node-lightify.git"
   },
   "bugs": {
-    "url": "https://github.com/mylesgray/node-lightify-mg/issues"
+    "url": "https://github.com/rainlake/node-lightify/issues"
   },
   "engines": {
     "node": ">=0.12.0"
