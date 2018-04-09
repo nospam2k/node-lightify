@@ -9,7 +9,6 @@ const
     COMMAND_ONOFF = 0x32,
     COMMAND_TEMP = 0x33,
     COMMAND_COLOR = 0x36,
-
     COMMAND_SOFT_ON = 0xDB,
     COMMAND_SOFT_OFF = 0xDC,
     COMMAND_GET_ZONE_INFO = 0x26,
@@ -67,6 +66,7 @@ var lightify = function(ip, logger) {
     ];
     this.sendNextRequest = this.sendNextRequestNormal;
     this.connectErrorCount = 0;
+    this.sendNextRequest = this.sendNextRequestNormal;
 };
 lightify.prototype.processData = function(cmd, data) {
     var fail = data.readUInt8(8);
@@ -103,7 +103,7 @@ lightify.prototype.connect = function() {
             reject('connect timeout');
             self.logger && self.logger.debug('can not connect to lightify bridge, timeout');
             self.client.destroy();
-        }, 4000);
+        }, 20000);
         self.client.on('data', function(data) {
             self.logger && self.logger.debug('socket data: [%s]', data.toString('hex'))
             if(self.readBuffer && self.readBuffer.length) {
@@ -198,7 +198,7 @@ lightify.prototype.sendNextRequestAutoClose = function (buffer) {
                     self.logger && self.logger.debug('sendNextRequest: sent buffer done, remaining length=' + self.buffers.length);
                     if (self.buffers.length) {
                         if (nextTimer) clearTimeout(nextTimer);
-                        nextTimer = setTimeout (checkSend, 1000);
+                        nextTimer = setTimeout (checkSend, 5000);
                     }
                 }
                 break;
@@ -228,7 +228,7 @@ lightify.prototype.sendNextRequestAutoClose = function (buffer) {
 
 lightify.prototype.setAutoCloseConnection = function (on) {
     if (on) {
-        if (this.timeToStayConnected === undefined) this.timeToStayConnected = 3000;
+        if (this.timeToStayConnected === undefined) this.timeToStayConnected = 6000;
         this.buffers = this.buffers || [];
         this.buffers.length = 0;
         this.sendNextRequest = this.sendNextRequestAutoClose;
@@ -251,7 +251,7 @@ lightify.prototype.connectEx = function (cb, errorCb) {
             if (self.connectErrorCount++ < 5) setTimeout(function() {
                 self.client = undefined;
                 self.connectEx(cb);
-            }, 1000 * self.connectErrorCount);
+            }, 5000 * self.connectErrorCount);
             else {
                 errorCb && errorCb('Can not connect to Lightify Gateway ' + self.ip, error);
                 self.logger && self.logger.debug ('Can not connect to Lightify Gateway ' + self.ip);
@@ -307,7 +307,7 @@ lightify.prototype.sendCommand = function(cmdId, body, flag, cb, packageSize) {
             cmd.resolve = undefined;
             cmd.reject = undefined;
             self.sendNextRequest();
-        }, 1000);
+        }, 10000);
         self.logger && self.logger.debug('command sent [%s][%s]', cmd.seq, buffer.toString('hex'));
         self.commands.push(cmd);
         self.sendNextRequest(buffer);
