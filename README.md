@@ -10,13 +10,13 @@ Low-level client library for controlling Zigbee lights, switches by Lightify Wir
 ## Install
 
 ```bash
-$ npm install node-lightify-mg
+$ npm install node-lightify
 ```
 
 ## Usage
 
 ```javascript
-var lightify = require('node-lightify-mg');
+var lightify = require('node-lightify');
 var connection = new lightify.lightify('x.x.x.x');
 connection.connect().then(function(){
     return connection.discover();
