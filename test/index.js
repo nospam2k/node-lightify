@@ -67,3 +67,18 @@ test(`nodeOnOff`, async t => {
     await t.context.connection.nodeOnOff(-6.194884401344489e-289, true, false)
   );
 });
+
+test(`nodeBrightness`, async t => {
+  mockResponses[
+    `EQAAMQEAAABEUgkAACYYhDIKAA==`
+  ] = `EgABMQEAAAAAAQBEUgkAACYYhAA=`;
+
+  t.snapshot(
+    await t.context.connection.nodeBrightness(
+      -6.194884401344489e-289,
+      50,
+      10,
+      false
+    )
+  );
+});
