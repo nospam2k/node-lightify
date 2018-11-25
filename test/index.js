@@ -13,9 +13,18 @@ let server;
 
 test.before.cb(t => {
   server = net.createServer(socket => {
-    socket.once(`data`, request => {
-      const response = mockResponses[request.toString(`base64`)];
-      socket.end(Buffer.from(response, `base64`));
+    socket.once(`data`, buffer => {
+      const request = buffer.toString(`base64`);
+      const response = mockResponses[request];
+
+      if (response) {
+        socket.end(Buffer.from(response, `base64`));
+      } else {
+        console.error(
+          `Error: Mock gateway received unknown request "${request}".`
+        );
+        socket.end();
+      }
     });
   });
 
@@ -41,4 +50,12 @@ test(`discover`, async t => {
   ] = `ywEBEwEAAAAACQDia0RSCQAAJhiECgECBJICAQABZIwK/////0ExOSBUVyA2MCAwMQAAAAAAAAAAAAAAAFsPmtQCAAAmGIQKAQIEkgIBAAFkjAr/////QTE5IFRXIDYwIDAyAAAAAAAAAAAAAAAAZ/CPEekAACYYhEAQAFEhAgAAAWSMCgEAAP9EaW5pbmcgUm9vbQAAAAAASAAAAAAAAAAn6yS3BAAAJhiEAgECBJICAgABZIwKAQAA/0ExOSBUVyA2MCAwMwAAAAAAAAAAAAAAAJjIIq0EAAAmGIQCAQIEkgICAAFkjAoBAAD/QTE5IFRXIDYwIDA0AAAAAAAAAAAAAAAAqlN1EekAACYYhEAQAFEhAgAAAWSMCgEAAP9LaXRjaGVuAAAAAAAAAAAAAgAAAAAAAABF72hDBQAAJhiEAgECBJICBAABZIwKAQAA/0ExOSBUVyA2MCAwNQAAAAAAAAAAAAAAACWjiv4CAAAmGIQCAQIEkgIEAAFkjAoBAAD/QTE5IFRXIDYwIDA2AAAAAAAAAAAAAAAABNC7EukAACYYhEAQAFEhAgAAAWSMCgEAAP9MaXZpbmcgUm9vbQAAAAAAkQAAAAAAAAA=`;
 
   t.snapshot(await t.context.connection.discover());
+});
+
+test(`discoverZone`, async t => {
+  mockResponses[
+    `BwAAHgEAAAAA`
+  ] = `PwABHgEAAAAAAwABAERpbmluZyBSb29tAAAAAAACAEtpdGNoZW4AAAAAAAAAAAADAExpdmluZyBSb29tAAAAAAA=`;
+
+  t.snapshot(await t.context.connection.discoverZone());
 });
