@@ -82,3 +82,18 @@ test(`nodeBrightness`, async t => {
     )
   );
 });
+
+test(`nodeTemperature`, async t => {
+  mockResponses[
+    `EgAAMwEAAABEUgkAACYYhIwKCgA=`
+  ] = `EgABMwEAAAAAAQBEUgkAACYYhAA=`;
+
+  t.snapshot(
+    await t.context.connection.nodeTemperature(
+      -6.194884401344489e-289,
+      2700,
+      10,
+      false
+    )
+  );
+});
