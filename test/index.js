@@ -59,3 +59,11 @@ test(`discoverZone`, async t => {
 
   t.snapshot(await t.context.connection.discoverZone());
 });
+
+test(`nodeOnOff`, async t => {
+  mockResponses[`DwAAMgEAAABEUgkAACYYhAE=`] = `EgABMgEAAAAAAQBEUgkAACYYhAA=`;
+
+  t.snapshot(
+    await t.context.connection.nodeOnOff(-6.194884401344489e-289, true, false)
+  );
+});
