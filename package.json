@@ -2,7 +2,7 @@
   "name": "node-lightify",
   "version": "2.1.13",
   "description": "lightify node module",
-  "license": "BSD",
+  "license": "MIT",
   "keywords": [
     "node",
     "osram",
